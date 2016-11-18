@@ -1,0 +1,23 @@
+
+div#content {
+	margin-left: 45px;
+	margin-right: 45px;
+}
+
+label.input-group {
+	width: 100%;
+	font-size: 10px;
+	margin-bottom: 0px;
+}
+
+.form-group {
+	width: 100%;
+}
+
+.input-group {
+	width: 100%;	
+}
+
+.form-control {
+	font-size: 12px;
+}
