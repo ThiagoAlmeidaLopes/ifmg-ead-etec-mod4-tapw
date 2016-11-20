@@ -1,31 +1,71 @@
 (function(HTTP, Form, Input, Params) {
 
-	HTTP.ajaxSetup({
-		contentType: "application/json; charset=utf-8"
-	});
-
 	HTTP.get("/backend/services/processo/" + (Params[1] || 0), function(processo) {
 
 		Input('processo_numero').val(processo.numero);
 		Input('processo_nome_cliente').val(processo.nomeCliente);
 
-	}, "json");
+	});
 
 	Form('frmProcesso', function(formInputJSONData) {
 
-		HTTP.post("/backend/services/processo/" + (Params[1] || 0), formInputJSONData, function(processo) {
+		HTTP.put("/backend/services/processo/" + (Params[1] || 0), formInputJSONData, function(_message) {
 
-				Input('processo_numero').val(processo.numero);
-				Input('processo_nome_cliente').val(processo.nomeCliente);
+			console.log(_message);
 
-			}, "json")
-			.fail(function(XHR) {
-				console.error(XHR.responseJSON);
-			});
+		}, function(_error) {
+
+			console.error(_error);
+		});
 
 	});
 
-})(jQuery, function(name, OnSubmit) {
+})({
+	ajax: function(_method, _resource, _data, _callback, _fail) {
+
+		$.ajaxSetup({
+			contentType: "application/json; charset=utf-8"
+		});
+
+		if ($.isFunction(_data)) {
+			_fail = _callback;
+			_callback = _data;
+			_data = {};
+		}
+
+		return $.ajax({
+			url: _resource,
+			method: _method,
+			success: function(data, textStatus, jqXHR) {
+				_callback.call({}, data);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				_fail.call({}, errorThrown);
+			},
+			statusCode: {
+				404: function() {
+					alert("page not found");
+				}
+			},
+			data: _data,
+			dataType: 'json',
+			contentType: "application/json; charset=utf-8"
+		});
+	},
+	get: function(resource, data, callback, fail) {
+		this.ajax('GET', resource, data, callback, fail);
+	},
+	put: function(resource, data, callback, fail) {
+		this.ajax('PUT', resource, data, callback, fail);
+	},
+	post: function(resource, data, callback, fail) {
+		this.ajax('POST', resource, data, callback, fail);
+	},
+	delete: function(resource, data, callback, fail) {
+		this.ajax('DELETE', resource, data, callback, fail);
+	}
+
+}, function(name, OnSubmit) {
 
 	return $('form[name=' + name + ']').submit(function(event) {
 		event.preventDefault();
